@@ -3,7 +3,7 @@
 <head> 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">   
-<title>Chatbot Prototype</title>
+<title>Chatbot</title>
 <style>
   * {
     padding: 0;
@@ -12,7 +12,115 @@
 
   body {
     font-family: Arial;
-    background: purple;
+    background: linear-gradient(135deg, #2d1b4e 0%, #1a0f3a 50%, #3d2863 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  .background-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .shape {
+    position: absolute;
+    opacity: 0.15;
+    animation: float 20s infinite ease-in-out;
+  }
+
+  .shape.circle {
+    border-radius: 50%;
+    background: rgba(138, 43, 226,1);
+  }
+
+  .shape.square {
+    background: rgba(147, 51, 234, 1);
+    transform: rotate(45deg);
+  }
+
+  .shape.triangle {
+    width: 0;
+    height: 0;
+    background: transparent;
+    border-left: 75px solid transparent;
+    border-right: 75px solid transparent;
+    border-bottom: 130px solid rgba(168, 85, 247, 1);
+  }
+  .shape:nth-child(1) {
+    width: 200px;
+    height: 200px;
+    top: 10%;
+    left: 10%;
+    animation-delay: 0s;
+    animation-duration: 25s;
+  }
+
+  .shape:nth-child(2) {
+    width: 150px;
+    height: 150px;
+    top: 60%;
+    left: 80%;
+    animation-delay: -5s;
+    animation-duration: 20s;
+  }
+
+  .shape:nth-child(3) {
+    width: 100px;
+    height: 100px;
+    top: 70%;
+    left: 15%;
+    animation-delay: -10s;
+    animation-duration: 30s;
+  }
+
+  .shape:nth-child(4) {
+    width: 180px;
+    height: 180px;
+    top: 20%;
+    left: 75%;
+    animation-delay: -15s;
+    animation-duration: 22s;
+  }
+
+  .shape:nth-child(5) {
+    width: 120px;
+    height: 120px;
+    top: 80%;
+    left: 50%;
+    animation-delay: -8s;
+    animation-duration: 28s;
+  }
+
+  .shape:nth-child(6) {
+    top: 40%;
+    left: 20%;
+    animation-delay: -12s;
+    animation-duration: 26s;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    25% {
+      transform: translate(30px, -30px) rotate(90deg);
+    }
+    50% {
+      transform: translate(-20px, 20px) rotate(180deg);
+    }
+    75% {
+      transform: translate(40px, 10px) rotate(270deg);
+    }
+  }
+  .content-wrapper {
+    position: relative;
+    z-index: 1;
   }
 
   #chatbox {
@@ -21,6 +129,7 @@
     background-color: RGB(216, 191, 216);
     padding: 40px;
     border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 
   #messages {
@@ -30,6 +139,8 @@
     padding: 10px;
     margin-bottom: 10px;
     background-color: white;
+    border-bottom-left-radius:20px;
+    border-bottom-right-radius:20px;
   }
 
   .user {
@@ -43,13 +154,24 @@
   input {
     width: 310px;
     padding: 12px;
-    border-radius: 20px;
+    border-radius: 10px;
+    border: 2px solid purple;
   }
 
   button {
     padding: 10px;
     background-color: rgb(0, 127, 255);
-    border-radius: 20px;
+    border-radius: 10px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    width:57px;
+    height:40px
+  }
+
+  button:hover {
+    background-color: rgb(0, 100, 200);
   }
 
   h1 {
@@ -61,8 +183,9 @@
     font-family: Georgia, "Times New Roman", serif;
     font-size: 28px;
     padding: 5px;
+    border-top-left-radius:20px;
+    border-top-right-radius:20px;
   }
-
 
   #red {
     background-color: red;
@@ -71,7 +194,8 @@
     color: white;
     border-radius: 10px;
     padding: 20px;
-    margin: 6px 439px -38px;
+    margin: 6px 439px -38px ;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   }
 
   #call {
@@ -81,22 +205,31 @@
 </head>
 
 <body>
-  <div id="red">
-    <div id="call">
-      <p>In Intermediate Crisis?</p>
-    </div>
-    <div>
-      <p>Call 988 or text HOME to 741741</p>
-    </div>
+  <div class="background-animation">
+    <div class="shape circle"></div>
+    <div class="shape square"></div>
+    <div class="shape circle"></div>
+    <div class="shape square"></div>
+    <div class="shape circle"></div>
+    <div class="shape triangle"></div>
   </div>
 
+  <div class="content-wrapper">
+    <div id="red">
+      <div id="call">
+        <p>In Intermediate Crisis?</p>
+      </div>
+      <div>
+        <p>Call 988 or text HOME to 741741</p>
+      </div>
+    </div>
 
-
-  <div id="chatbox">
-    <h1>Suicide Helpline Chatbot</h1>
-    <div id="messages"></div>
-    <input type="text" id="userInput" placeholder="Type a message..." />
-    <button onclick="sendMessage()">Send</button>
+    <div id="chatbox">
+      <h1>Suicide Helpline Chatbot</h1>
+      <div id="messages"></div>
+      <input type="text" id="userInput" placeholder="Type a message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
   </div>
 
   <script>
