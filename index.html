@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">   
+<title>Chatbot Prototype</title>
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+  }
+
+  body {
+    font-family: Arial;
+    background: purple;
+  }
+
+  #chatbox {
+    width: 400px;
+    margin: 50px auto;
+    background-color: RGB(216, 191, 216);
+    padding: 40px;
+    border-radius: 10px;
+  }
+
+  #messages {
+    height: 320px;
+    overflow-y: auto;
+    border: 3px solid black;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: white;
+  }
+
+  .user {
+    color: blue;
+  }
+
+  .bot {
+    color: green;
+  }
+
+  input {
+    width: 310px;
+    padding: 12px;
+    border-radius: 20px;
+  }
+
+  button {
+    padding: 10px;
+    background-color: rgb(0, 127, 255);
+    border-radius: 20px;
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: -5px;
+    background-color: purple;
+    line-height: 2;
+    color: white;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 28px;
+    padding: 5px;
+  }
+
+
+  #red {
+    background-color: red;
+    width: 435px;
+    text-align: center;
+    color: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 6px 439px -38px;
+  }
+
+  #call {
+    font-weight: 900;
+  }
+</style>
+</head>
+
+<body>
+  <div id="red">
+    <div id="call">
+      <p>In Intermediate Crisis?</p>
+    </div>
+    <div>
+      <p>Call 988 or text HOME to 741741</p>
+    </div>
+  </div>
+
+
+
+  <div id="chatbox">
+    <h1>Suicide Helpline Chatbot</h1>
+    <div id="messages"></div>
+    <input type="text" id="userInput" placeholder="Type a message..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      let input = document.getElementById("userInput");
+      let message = input.value.trim();
+      if (message === "") return;
+
+      let messagesDiv = document.getElementById("messages");
+      messagesDiv.innerHTML += `<p class='user'><b>You:</b> ${message}</p>`;
+
+      let response = await fetch("/get", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: message })
+      });
+      let data = await response.json();
+
+      messagesDiv.innerHTML += `<p class='bot'><b>Bot:</b> ${data.response}</p>`;
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+      input.value = "";
+    }
+  </script>
+</body>
+</html>
