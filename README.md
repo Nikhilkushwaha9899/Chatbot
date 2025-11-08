@@ -108,13 +108,6 @@ Inspired by the need for accessible mental health support
 Built with compassion for those struggling with mental health challenges
 
 
-📞 Support & Feedback
-For issues, questions, or suggestions:
-
-Open an issue on GitHub
-Contact: [your-email@example.com]
-
-
 🌟 Remember
 You are not alone. Your life has value. Help is available.
 If you're struggling, please reach out to a crisis line or mental health professional. This chatbot is here to support you, but human connection and professional care are invaluable.
