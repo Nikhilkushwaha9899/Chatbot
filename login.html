@@ -247,6 +247,24 @@ input::placeholder{
   border-radius:10px;
   background-color:rgba(255,255,255,0.3);
 }
+.error-message {
+  color: #cd1c18;
+  background-color: rgba(255, 200, 200, 0.3);
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0;
+  display: none;
+  text-align: center;
+}
+.success-message {
+  color: #1e7b1e;
+  background-color: rgba(200, 255, 200, 0.3);
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0;
+  display: none;
+  text-align: center;
+}
 </style> 
 </head>
 <body>
@@ -270,29 +288,82 @@ input::placeholder{
 
    <h1>Suicide Helpline Chatbot</h1>
     <div id="loginbox">
-     <a href="index.html">
+     <a href="/chat">
        <button id="one">
         🆘 TALK NOW - No Login Required<br>
         Get immediate anonymous support
        </button>
      </a>
      <pre align="center" style="font-size:20px;color:#3E187A">Or</pre><br>
-     <form action="index.html">
+     <form id="loginForm" onsubmit="return false;">
       <div id="main">
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
         <h2>Sign In to Your Account</h2><br>
         <label>Username</label><br>
-        <input type="text" placeholder="Enter your Username" id="name"><br>
+        <input type="text" placeholder="Enter your Username" id="name" required><br>
         <label>Password</label><br>
-        <input type="password" placeholder="Enter Your Password" id="pass"><br>
-        <button id="two"><b>Sign In</b></button>
+        <input type="password" placeholder="Enter Your Password" id="pass" required><br>
+        <button id="two" type="button" onclick="handleLogin()"><b>Sign In</b></button>
       </div>
      </form>
-<div id="jump">Dont't have an account?<a href="singup.html" id="_1">Create One</a></div>
+<div id="jump">Don't have an account?<a href="/signup" id="_1">Create One</a></div>
 <div id="description">
   <h4>🔒 Your Privacy Matters</h4>
   All conversations are confidential. Account creation is optional and allows you to save your conversation history securely.
 </div>
    </div>
  </div>
+
+ <script>
+   async function handleLogin() {
+     const username = document.getElementById('name').value.trim();
+     const password = document.getElementById('pass').value;
+     const errorDiv = document.getElementById('errorMessage');
+     const successDiv = document.getElementById('successMessage');
+    
+     errorDiv.style.display = 'none';
+     successDiv.style.display = 'none';
+     
+     if (!username || !password) {
+       errorDiv.textContent = 'Please enter both username and password';
+       errorDiv.style.display = 'block';
+       return;
+     }
+     
+     try {
+       const response = await fetch('/api/login', {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({ username, password })
+       });
+       
+       const data = await response.json();
+       
+       if (data.success) {
+         successDiv.textContent = 'Login successful! Redirecting...';
+         successDiv.style.display = 'block';
+         setTimeout(() => {
+           window.location.href = '/chat';
+         }, 1000);
+       } else {
+         errorDiv.textContent = data.message || 'Login failed';
+         errorDiv.style.display = 'block';
+       }
+     } catch (error) {
+       errorDiv.textContent = 'An error occurred. Please try again.';
+       errorDiv.style.display = 'block';
+       console.error('Login error:', error);
+     }
+   }
+   
+   document.getElementById('pass').addEventListener('keypress', function(e) {
+     if (e.key === 'Enter') {
+       handleLogin();
+     }
+   });
+ </script>
 </body>
 </html>
