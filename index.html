@@ -150,6 +150,7 @@
 
   .bot {
     color: green;
+    white-space: pre-wrap;
   }
 
   input {
@@ -212,6 +213,29 @@
     display:flex;
     justify-content:center;
   }
+  
+  #userStatus {
+    text-align: center;
+    color: white;
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  #logoutBtn {
+    background: linear-gradient(to bottom, #994ECC, #3E187A);
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    margin-top: 5px;
+    width: auto;
+    height: auto;
+  }
+  
+  #logoutBtn:hover {
+    background: linear-gradient(to bottom, #7a3da3, #2d1258);
+  }
 </style>
 </head>
 
@@ -235,6 +259,7 @@
     </div>
   </div>
     
+  <div id="userStatus"></div>
 
     <div id="chatbox">
       <h1>Suicide Helpline Chatbot</h1>
@@ -245,26 +270,76 @@
   </div>
 
   <script>
+    async function checkSession() {
+      try {
+        const response = await fetch('/api/check_session');
+        const data = await response.json();
+        
+        const statusDiv = document.getElementById('userStatus');
+        if (data.logged_in) {
+          statusDiv.innerHTML = `
+            <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; display: inline-block;">
+              Welcome, <strong>${data.username}</strong>! Your chats are being saved.
+              <button id="logoutBtn" onclick="handleLogout()">Logout</button>
+            </div>
+          `;
+        } else {
+          statusDiv.innerHTML = `
+            <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; display: inline-block;">
+              Anonymous Mode - <a href="/login" style="color: #C797EB;">Login</a> to save chat history
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Session check error:', error);
+      }
+    }
+    
+    async function handleLogout() {
+      try {
+        await fetch('/api/logout', { method: 'POST' });
+        window.location.href = '/login';
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+    }
+    
     async function sendMessage() {
       let input = document.getElementById("userInput");
       let message = input.value.trim();
       if (message === "") return;
 
       let messagesDiv = document.getElementById("messages");
-      messagesDiv.innerHTML += `<p class='user'><b>You:</b> ${message}</p>`;
+      messagesDiv.innerHTML += `<p class='user'><b>You:</b> ${escapeHtml(message)}</p>`;
 
-      let response = await fetch("/get", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: message })
-      });
-      let data = await response.json();
+      try {
+        let response = await fetch("/get", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: message })
+        });
+        let data = await response.json();
 
-      messagesDiv.innerHTML += `<p class='bot'><b>Bot:</b> ${data.response}</p>`;
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        messagesDiv.innerHTML += `<p class='bot'><b>Bot:</b> ${escapeHtml(data.response)}</p>`;
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      } catch (error) {
+        messagesDiv.innerHTML += `<p class='bot'><b>Bot:</b> Sorry, there was an error. Please try again.</p>`;
+        console.error('Message error:', error);
+      }
 
       input.value = "";
     }
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    document.getElementById('userInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+    checkSession();
   </script>
 </body>
 </html>
