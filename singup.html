@@ -2,7 +2,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">   
-<title>Chatbot</title>  
+<title>Sign Up - Chatbot</title>  
 <style>
 *{
     padding:0;
@@ -267,6 +267,27 @@ input::placeholder{
   border-radius:10px;
   background-color:rgba(255,255,255,0.3);
 }
+/* NEW STYLES FOR ERROR/SUCCESS MESSAGES */
+.error-message {
+  color: #cd1c18;
+  background-color: rgba(255, 200, 200, 0.3);
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0;
+  display: none;
+  text-align: center;
+  font-weight: bold;
+}
+.success-message {
+  color: #1e7b1e;
+  background-color: rgba(200, 255, 200, 0.3);
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0;
+  display: none;
+  text-align: center;
+  font-weight: bold;
+}
 </style> 
 </head>
 <body>
@@ -290,33 +311,107 @@ input::placeholder{
 
    <h1>Suicide Helpline Chatbot</h1>
     <div id="signbox">
-     <a href="index.html">
+     <a href="/chat">
        <button id="one">
         🆘 TALK NOW - No Login Required<br>
         Get immediate anonymous support
        </button>
      </a>
      <pre align="center" style="font-size:20px;color:#3E187A">Or</pre><br>
-     <form action="login.html">
+     
+     <form id="signupForm" onsubmit="return false;">
       <div id="main">
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+        
         <h2>Create Your Account</h2><br>
         <label>Username</label><br>
-        <input type="text" placeholder="Enter your Username" id="name"><br>
+        <input type="text" placeholder="Enter your Username" id="name" required><br>
         <label>Email(Optional)</label><br>
         <input type="email" placeholder="For Password Recovery Only" id="mail"><br>
         <label>Password</label><br>
-        <input type="password" placeholder="Enter Your Password" id="pass"><br>
+        <input type="password" placeholder="Enter Your Password" id="pass" required><br>
         <label>Confirm Password</label><br>
-        <input type="password" placeholder="Confirm Your Password" id="cpass"><br>
-        <button id="two"><b>Create Account</b></button>
+        <input type="password" placeholder="Confirm Your Password" id="cpass" required><br>
+        
+        <button id="two" type="button" onclick="handleSignup()"><b>Create Account</b></button>
       </div>
      </form>
-<div id="jump">Already have an account?<a href="login.html" id="_1">Sign in</a></div>
+     
+<div id="jump">Already have an account?<a href="/login" id="_1">Sign in</a></div>
 <div id="description">
   <h4>🔒 Your Privacy Matters</h4>
   All conversations are confidential. Account creation is optional and allows you to save your conversation history securely.
 </div>
    </div>
  </div>
+
+ <script>
+   async function handleSignup() {
+     const username = document.getElementById('name').value.trim();
+     const email = document.getElementById('mail').value.trim();
+     const password = document.getElementById('pass').value;
+     const confirmPassword = document.getElementById('cpass').value;
+     const errorDiv = document.getElementById('errorMessage');
+     const successDiv = document.getElementById('successMessage');
+     
+  
+     errorDiv.style.display = 'none';
+     successDiv.style.display = 'none';
+     
+    
+     if (!username || !password || !confirmPassword) {
+       errorDiv.textContent = 'Please fill in all required fields';
+       errorDiv.style.display = 'block';
+       return;
+     }
+     
+     if (password !== confirmPassword) {
+       errorDiv.textContent = 'Passwords do not match';
+       errorDiv.style.display = 'block';
+       return;
+     }
+     
+     if (password.length < 6) {
+       errorDiv.textContent = 'Password must be at least 6 characters';
+       errorDiv.style.display = 'block';
+       return;
+     }
+     
+     try {
+       const response = await fetch('/api/signup', {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({ username, email, password })
+       });
+       
+       const data = await response.json();
+       
+       if (data.success) {
+         successDiv.textContent = 'Account created successfully! Redirecting to login...';
+         successDiv.style.display = 'block';
+    
+         setTimeout(() => {
+           window.location.href = '/login';
+         }, 2000);
+       } else {
+         errorDiv.textContent = data.message || 'Signup failed';
+         errorDiv.style.display = 'block';
+       }
+     } catch (error) {
+       errorDiv.textContent = 'An error occurred. Please try again.';
+       errorDiv.style.display = 'block';
+       console.error('Signup error:', error);
+     }
+   }
+   
+   document.getElementById('cpass').addEventListener('keypress', function(e) {
+     if (e.key === 'Enter') {
+       handleSignup();
+     }
+   });
+ </script>
 </body>
 </html>
