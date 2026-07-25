@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 
 app = Flask(__name__)
-app.secret_key = 'R1R2$funtion' 
+app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key") 
 
 # Database initialization
 def init_db():
@@ -212,7 +212,7 @@ def login_page():
     return render_template("login.html")
 @app.route("/signup")
 def signup_page():
-    return render_template("singup.html")
+    return render_template("signup.html")
 @app.route("/chat")
 def home():
     return render_template("index.html")
