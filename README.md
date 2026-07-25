@@ -186,3 +186,5 @@ If you or someone you know is in immediate danger:
 - Registered users: Chat history is stored securely
 - No personal health information is shared with third parties
 - Users can delete accounts and data at any time
+
+Project Link - https://chatbot-gamma-ochre-98.vercel.app/
